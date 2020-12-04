@@ -91,7 +91,7 @@ bool parse_cmd(int argc, char* argv[], char* host, short* port)
 
 int close_socket(int socket) {
 #ifdef _WIN32
-    CHECK_IO(closesocket(socket) == 0, -1, "Error close socket\n");
+    CHECK_IO(closesocket(socket) == 0, -1, "");
     return 0;
 #elif __linux__
     return close(socket);

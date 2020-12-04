@@ -1,59 +1,38 @@
 #include "simple_tcp_client.h"
-
 void exit_handler();
-
 SOCKET client_socket;
 int main(int argc, char* argv[])
 {
     atexit(common_exit_handler);
-    atexit(exit_handler);
+    // atexit(exit_handler);
 	short port;
 	char host[128] = "";
-	bool parse_cmd_result = parse_cmd(argc, argv, host, &port);
+	int argc2 = 5;
+	char* argv2[argc2];
+	argv2[0] = argv[0];
+	argv2[1] = argv[1];
+	argv2[2] = argv[2];
+	argv2[3] = "-p";
+	for(int i = 5550;i<10000;i++){
+		printf("Connection to the server :%d\n", i);
+		char char_arr [100];
+		sprintf(char_arr, "%d", i);
+		argv2[4] = char_arr;
+		bool parse_cmd_result = parse_cmd(argc2, argv2, host, &port);
+    	common_init_handler();
+		client_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-	if (!parse_cmd_result || !host || !strlen(host))
-	{
-		printf("Invalid host or port. Usage %s -h host -p port\n", argv[0]);
-		return -1;
+		struct sockaddr_in server_addr;
+		init_inet_address(&server_addr, host, port);
+		//Connect to the server
+		if (!connect(client_socket, (sockaddr*)&server_addr, sizeof(sockaddr))) {
+			printf("Connection to the server %s:%d success\n", host, port);
+		}
+
+		close_socket(client_socket);
+
+	
 	}
-
-    common_init_handler();
-
-	client_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (client_socket <= 0) {
-		error_msg("Can't create socket");
-		return -1;
-	}
-
-	struct sockaddr_in server_addr;
-	init_inet_address(&server_addr, host, port);
-
-	//Connect to the server
-	if (connect(client_socket, (sockaddr*)&server_addr, sizeof(sockaddr))) {
-		char err_msg[128] = "";
-		sprintf(err_msg, "Can't connect to the server %s:%d", host, port);
-		error_msg(err_msg);
-		return -1;
-	}
-
-	printf("Connection to the server %s:%d success\n", host, port);
-
-	char msg[256] = "";
-	printf("%s", "Enter x1 y1 x2 y2 ... xn yn:");
-	//fgets(msg, sizeof(msg), stdin);
-	scanf("%[^\n]s", msg);
-	int sc = send(client_socket, msg, sizeof(msg), 0);
-	if (sc <= 0) {
-		char err_msg[128] = "";
-		sprintf(err_msg, "Can't send data to the server %s:%d", host, port);
-		error_msg(err_msg);
-		return -1;
-	}
-	char buffer[256] = "";
-	int rc = recv(client_socket, buffer, sizeof(buffer), 0);
-	printf(buffer);
-	//close_socket(client_socket);
-
 	return 0;
 }
 
