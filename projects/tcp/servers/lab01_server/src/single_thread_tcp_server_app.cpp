@@ -1,6 +1,4 @@
-#include "prog_launch_server.h"
-
-
+#include "single_thread_tcp_server.h"
 
 void exit_handler();
 
@@ -9,7 +7,7 @@ SOCKET server_socket;
 int main(int argc, char *argv[]) {
     atexit(common_exit_handler);
     atexit(exit_handler);
-	short port = DEFAULT_PORT;
+    short port = DEFAULT_PORT;
     char host[128] = "";
     bool parse_cmd_result = parse_cmd(argc, argv, host, &port);
 
@@ -43,17 +41,14 @@ int main(int argc, char *argv[]) {
         sockaddr_in incom_addr;
         memset(&incom_addr, 0, sizeof(incom_addr));
         socklen_t len = sizeof(incom_addr);
-        SOCKET socket;  
-        socket = accept(server_socket, (sockaddr *) &incom_addr, &len);
+        SOCKET socket = accept(server_socket, (sockaddr *) &incom_addr, &len);
         if (socket <= 0) {
             error_msg("Can't accept connection");
             return -1;
         }
         handle_connection(socket, &incom_addr);
     }
-
     close_socket(server_socket);
-
     return 0;
 }
 

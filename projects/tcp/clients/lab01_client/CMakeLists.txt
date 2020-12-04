@@ -1,4 +1,4 @@
-project(simple_http_tcp_client)
+project(lab01_client)
 
 include_directories(include)
 file(GLOB SRC src/*.cpp src/*.cxx)

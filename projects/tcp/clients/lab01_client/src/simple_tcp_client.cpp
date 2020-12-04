@@ -1,4 +1,4 @@
-#include "prog_launch_client.h"
+#include "simple_tcp_client.h"
 
 void exit_handler();
 
@@ -39,10 +39,9 @@ int main(int argc, char* argv[])
 	printf("Connection to the server %s:%d success\n", host, port);
 
 	char msg[256] = "";
-	printf("%s", "Enter msg:");
+	printf("%s", "Enter x1 y1 x2 y2 ... xn yn:");
 	//fgets(msg, sizeof(msg), stdin);
 	scanf("%[^\n]s", msg);
-
 	int sc = send(client_socket, msg, sizeof(msg), 0);
 	if (sc <= 0) {
 		char err_msg[128] = "";
@@ -50,10 +49,10 @@ int main(int argc, char* argv[])
 		error_msg(err_msg);
 		return -1;
 	}
-
-
-
-	close_socket(client_socket);
+	char buffer[256] = "";
+	int rc = recv(client_socket, buffer, sizeof(buffer), 0);
+	printf(buffer);
+	//close_socket(client_socket);
 
 	return 0;
 }
